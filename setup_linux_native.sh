@@ -46,7 +46,7 @@ cat > "$PROFILE_DIR/linux_wg_profile.xml" << 'XMLEOF'
 XMLEOF
 
 export FASTRTPS_DEFAULT_PROFILES_FILE="$PROFILE_DIR/linux_wg_profile.xml"
-export ROS_DISCOVERY_SERVER="10.0.0.1:11811"
+export ROS_DISCOVERY_SERVER="10.0.0.2:11811"
 export ROS_DOMAIN_ID="$DOMAIN_ID"
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
@@ -57,7 +57,7 @@ fi
 
 echo "=== Linux Native ROS 2 → Mac Docker ==="
 echo "  ROS_DOMAIN_ID:          $DOMAIN_ID"
-echo "  ROS_DISCOVERY_SERVER:   10.0.0.1:11811"
+echo "  ROS_DISCOVERY_SERVER:   10.0.0.2:11811 (run: fastdds discovery -i 0 -l 10.0.0.2 -p 11811)"
 echo "  FASTRTPS_PROFILE:       wg0-only (10.0.0.2)"
 echo ""
 
