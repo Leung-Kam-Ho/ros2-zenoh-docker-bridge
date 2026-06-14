@@ -1,9 +1,4 @@
 #!/bin/bash
-# WireGuard offline VPN setup for cross-device ROS 2.
-# Usage:
-#   ./wg_setup.sh              # Generate all keys and configs
-#   ./wg_setup.sh linux <IP>   # (Run on Linux machine) Generate Linux config
-
 set -e
 WG_DIR="$(cd "$(dirname "$0")" && pwd)/wg_config"
 mkdir -p "$WG_DIR"
@@ -16,14 +11,13 @@ gen_keys() {
         return
     fi
     echo "  Generating keys for $label..."
-
     if command -v wg >/dev/null 2>&1; then
         local priv pub
         priv=$(umask 077; wg genkey)
         pub=$(echo "$priv" | wg pubkey)
         echo "$priv" > "$WG_DIR/${label}_private"
         echo "$pub"  > "$WG_DIR/${label}_public"
-    elif command -v docker >/dev/null 2>&1; then
+    else
         docker pull -q linuxserver/wireguard > /dev/null 2>&1 || true
         local tmp
         tmp=$(docker run --rm --entrypoint sh linuxserver/wireguard -c "
@@ -34,34 +28,30 @@ gen_keys() {
         " 2>/dev/null)
         echo "$tmp" | sed -n '1p' > "$WG_DIR/${label}_private"
         echo "$tmp" | sed -n '2p' > "$WG_DIR/${label}_public"
-    else
-        echo "ERROR: Need 'wg' (wireguard-tools) or Docker to generate keys."
-        echo "  Install: sudo apt install wireguard-tools"
-        exit 1
     fi
     echo "  Keys saved"
 }
 
 case "${1:-all}" in
     mac|all)
-        echo "=== Mac Setup ==="
+        echo "=== Mac Host Setup ==="
         gen_keys "mac"
-        MAC_PRIV=$(cat "$WG_DIR/mac_private")
         MAC_PUB=$(cat "$WG_DIR/mac_public")
 
         cat > "$WG_DIR/wg0.conf" << EOF
 [Interface]
-Address = 10.0.0.1/24
+Address = 10.0.0.1/32
 ListenPort = 51820
-PrivateKey = $MAC_PRIV
+PrivateKey = $(cat "$WG_DIR/mac_private")
 
-# Linux peer — add after running 'wg_setup.sh linux'
+# Linux peer — add after running 'wg_setup.sh linux ...'
+# Container peers — added by 'wg_setup.sh container ...'
 EOF
-        echo "  Mac config: $WG_DIR/wg0.conf"
-        echo "  Linux peer public key: $MAC_PUB"
+        echo "  Mac host config: $WG_DIR/wg0.conf"
+        echo "  Mac public key:  $MAC_PUB"
         echo ""
-        echo "  Run: ./run_wireguard_sidecar.sh"
-        echo "  Then on Linux: ./wg_setup.sh linux 192.168.31.248"
+        echo "  On Linux: ./wg_setup.sh linux <MAC_LAN_IP>"
+        echo "  On Mac:   ./wg_setup.sh container <name>"
         ;;
     linux)
         if [ -z "$2" ]; then
@@ -71,7 +61,6 @@ EOF
         fi
         echo "=== Linux Setup ==="
         gen_keys "linux"
-        LINUX_PRIV=$(cat "$WG_DIR/linux_private")
         LINUX_PUB=$(cat "$WG_DIR/linux_public")
 
         if [ ! -f "$WG_DIR/mac_public" ]; then
@@ -83,23 +72,60 @@ EOF
         sudo tee /etc/wireguard/wg0.conf > /dev/null << EOF
 [Interface]
 Address = 10.0.0.2/24
-PrivateKey = $LINUX_PRIV
+ListenPort = 51820
+PrivateKey = $(cat "$WG_DIR/linux_private")
 
 [Peer]
 PublicKey = $MAC_PUB
-Endpoint = $2:51820
 AllowedIPs = 10.0.0.0/24
 PersistentKeepalive = 25
 EOF
         echo "  Linux config: /etc/wireguard/wg0.conf"
-        echo "  Run: sudo wg-quick up wg0"
+        echo "  Start: sudo wg-quick up wg0"
+        echo ""
+        echo "=== Add container peers to Mac host ($WG_DIR/wg0.conf) ==="
+        echo "Run: ./wg_setup.sh container <name>"
+        echo "This adds the [Peer] block for each container."
+        ;;
+    container)
+        if [ -z "$2" ]; then
+            echo "Usage: $0 container <NAME> [CONTAINER_IP]"
+            echo "  e.g., $0 container talker 10.0.0.10"
+            exit 1
+        fi
+        NAME="$2"
+        IP="${3:-10.0.0.10}"
+        echo "=== Container '$NAME' Setup (IP: $IP) ==="
 
+        gen_keys "$NAME"
+
+        if [ ! -f "$WG_DIR/linux_public" ]; then
+            echo "ERROR: First run './wg_setup.sh linux <MAC_LAN_IP>' on Linux and copy wg_config/"
+            exit 1
+        fi
+        LINUX_PUB=$(cat "$WG_DIR/linux_public")
+
+        cat > "$WG_DIR/${NAME}.conf" << EOF
+[Interface]
+Address = $IP/32
+PrivateKey = $(cat "$WG_DIR/${NAME}_private")
+
+[Peer]
+PublicKey = $LINUX_PUB
+Endpoint = 192.168.31.249:51820
+AllowedIPs = 10.0.0.0/24
+PersistentKeepalive = 25
+EOF
+        echo "  Container config: $WG_DIR/${NAME}.conf"
+        echo "  Container IP: $IP"
         echo ""
-        echo "=== Add to Mac config ($WG_DIR/wg0.conf) ==="
+
+        echo "=== Also add this peer to Mac host ($WG_DIR/wg0.conf) ==="
         echo "[Peer]"
-        echo "PublicKey = $LINUX_PUB"
-        echo "AllowedIPs = 10.0.0.2/32"
+        echo "PublicKey = $(cat "$WG_DIR/${NAME}_public")"
+        echo "AllowedIPs = $IP/32"
         echo ""
-        echo "Then restart the WireGuard sidecar."
+        echo "Then: docker compose restart or restart the sidecar."
+        echo "Run container: ./run_r2_jazzy.sh $NAME"
         ;;
 esac
