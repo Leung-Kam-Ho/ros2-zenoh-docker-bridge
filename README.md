@@ -35,11 +35,11 @@ On your physical Linux machine, you need to install the Zenoh DDS bridge and sta
    ```
    *(Alternatively, you can install via `cargo install zenoh-bridge-dds` if you have Rust installed).*
 
-3.    **Start the Bridge:**
-   Open a terminal and run the bridge. We use `-a ".*"` to ensure *all* ROS 2 topics are explicitly allowed and routed.
+3.    **Start the Bridge as a Router:**
+   Open a terminal and run the bridge. We use `-m router` to act as the central hub, and `-a ".*"` to ensure *all* ROS 2 topics are explicitly allowed and routed.
    ```bash
    export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-   zenoh-bridge-dds -l tcp/0.0.0.0:7447 -a ".*"
+   zenoh-bridge-dds -m router -l tcp/0.0.0.0:7447 -a ".*"
    ```
 
 4. **Find the Linux Machine's LAN IP:**
