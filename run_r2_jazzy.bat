@@ -1,6 +1,6 @@
 @echo off
-if "%1%"=="" ( set NAME=r2_jazzy ) else ( set NAME=%1 )
-if "%2%"=="" ( set DOMAIN_ID=0 ) else ( set DOMAIN_ID=%2 )
+if "%1"=="" ( set NAME=r2_jazzy ) else ( set NAME=%1 )
+if "%2"=="" ( set DOMAIN_ID=0 ) else ( set DOMAIN_ID=%2 )
 
 docker run -it --rm ^
     --name %NAME% ^
