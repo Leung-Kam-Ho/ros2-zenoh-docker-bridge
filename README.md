@@ -162,3 +162,15 @@ Creating a completely offline, real-time, cross-platform bridge between isolated
 ### 5. Windows Docker Credential Bug
 **The Problem:** Windows Docker Desktop frequently fails to pull images due to a bug where the Windows Credential Manager authentication session expires, throwing the error: `A specified logon session does not exist. It may already have been terminated.`
 **The Solution:** Running `docker logout` in PowerShell clears the corrupt credential state, allowing the user to pull the public `eclipse/zenoh-bridge-dds` image seamlessly.
+
+## Roadmap / Future Work
+
+### 1. Direct Mac Docker ↔ Windows Docker Communication
+Currently, the Native Linux host acts as the central router/listener that both Mac and Windows Docker VMs connect to. The next major milestone is to enable **direct communication between Mac Docker and Windows Docker** without needing the Native Linux machine.
+
+**Planned Technical Approach:**
+- Modify `docker-compose.yml` to allow one of the Docker machines (e.g., Mac) to act as the Zenoh "Server/Listener".
+- Expose the Zenoh TCP port from the Docker VM to the host operating system using Docker port mapping (`ports: ["7447:7447/tcp"]`).
+- Configure the Zenoh bridge on the "Server" Docker to listen (`-l tcp/0.0.0.0:7447`) instead of connecting as a client.
+- Configure the "Client" Docker (e.g., Windows) to connect directly to the Mac's local network IP address.
+- Create new dedicated scripts (e.g., `mac/start_as_server.sh` and `windows/start_as_client.bat`) to manage these roles seamlessly.
