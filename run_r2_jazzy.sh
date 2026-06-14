@@ -3,7 +3,7 @@ set -euo pipefail
 
 NAME=${1:-r2_jazzy}
 DOMAIN_ID=${2:-0}
-DISCOVERY_SERVER=${3:-10.0.0.2}
+DISCOVERY_SERVER=${3:-10.0.0.100}
 LOCAL=false
 
 for arg in "$@"; do

@@ -46,7 +46,7 @@ cat > "$PROFILE_DIR/linux_wg_profile.xml" << 'XMLEOF'
 XMLEOF
 
 export FASTRTPS_DEFAULT_PROFILES_FILE="$PROFILE_DIR/linux_wg_profile.xml"
-export ROS_DISCOVERY_SERVER="10.0.0.2:11811"
+export ROS_DISCOVERY_SERVER="10.0.0.100:11811"
 export ROS_DOMAIN_ID="$DOMAIN_ID"
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
