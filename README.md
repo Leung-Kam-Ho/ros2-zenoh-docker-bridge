@@ -1,6 +1,6 @@
-# macRosJazzy
+# jazzy-docker-cross
 
-ROS 2 Jazzy in a Docker container, built for macOS (with .bat equivalents for Windows).
+ROS 2 Jazzy in a Docker container, cross-device communication ready (macOS + Windows).
 
 ## Files
 
