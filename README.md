@@ -6,6 +6,17 @@ It bypasses Docker Desktop's lack of real bridge mode by tunneling DDS multicast
 
 ## System Architecture
 
+## Why This Zenoh Solution is Better
+
+If you have researched this problem online, you likely found the standard workarounds: writing complex `fastdds.xml` profiles, hardcoding IP addresses for Discovery Servers, or relying on Windows 11's WSL Mirrored Mode (which doesn't work on Mac). 
+
+What we have built in this repository is significantly more elegant than the standard community workarounds:
+
+1. **Zero XML Configuration:** No messing with `fastdds.xml` or custom ROS 2 profiles.
+2. **True Plug-and-Play:** You don't have to change how ROS 2 behaves. It still uses standard UDP multicast *inside* the local environments. Zenoh just silently grabs it and moves it across the network.
+3. **Cross-Platform Parity:** It works exactly the same way on Mac, Windows, and Linux. No platform-specific hacks required.
+4. **TCP Reliability:** Instead of relying on UDP packets making it across a noisy WiFi network, the bridge uses a solid TCP tunnel (`tcp/0.0.0.0:7447`) to guarantee message delivery.
+
 ```text
 +-------------------------------------------------------------+
 | Native Linux Host (ARM64 / amd64)                           |
