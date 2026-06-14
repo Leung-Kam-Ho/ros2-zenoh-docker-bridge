@@ -1,0 +1,21 @@
+services:
+  ros2:
+    build: .
+    image: r2_jazzy
+    container_name: ros2_jazzy_node
+    # We use host network mode INSIDE the docker VM so that it shares the same network 
+    # namespace as the bridge, ensuring seamless DDS multicast discovery.
+    network_mode: "host"
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    # Keep the container alive so we can exec into it and run talker/listener
+    command: tail -f /dev/null
+
+  zenoh-bridge:
+    image: eclipse/zenoh-bridge-dds:latest
+    container_name: ros2_zenoh_bridge
+    network_mode: "host"
+    # The bridge connects to the Linux machine's IP on port 7447
+    command: ["-e", "tcp/${LINUX_IP}:7447"]
+    environment:
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}

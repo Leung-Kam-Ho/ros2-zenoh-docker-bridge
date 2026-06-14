@@ -1,0 +1,12 @@
+# Environment variables
+.env
+
+# MacOS specific
+.DS_Store
+
+# Temporary files
+*~
+*.swp
+
+# Docker
+.dockerignore
