@@ -7,7 +7,8 @@
 
 NAME=${1:-r2_jazzy}
 DOMAIN_ID=${2:-0}
-DISCOVERY_SERVER=${3:-}
+# DISCOVERY_SERVER=${3:-}
+
 
 DISCOVERY_ARGS="-e ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET"
 if [ -n "$DISCOVERY_SERVER" ]; then
@@ -19,6 +20,7 @@ docker run -it --rm \
     --network r2_jazzy_net \
     -e DISPLAY=host.docker.internal:0 \
     -e ROS_DOMAIN_ID="$DOMAIN_ID" \
-    $DISCOVERY_ARGS \
-    -e FASTDDS_BUILTIN_TRANSPORTS=UDPv4 \
     r2_jazzy
+
+    # $DISCOVERY_ARGS \
+    # -e FASTDDS_BUILTIN_TRANSPORTS=UDPv4 \
