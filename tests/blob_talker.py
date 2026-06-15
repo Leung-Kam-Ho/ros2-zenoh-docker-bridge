@@ -9,10 +9,10 @@ class BlobTalker(Node):
     def __init__(self, size_bytes):
         super().__init__('blob_talker')
         qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
+            reliability=ReliabilityPolicy.RELIABLE,
             durability=DurabilityPolicy.VOLATILE,
             history=HistoryPolicy.KEEP_LAST,
-            depth=1
+            depth=10
         )
         self.publisher_ = self.create_publisher(UInt8MultiArray, 'speed_test_topic', qos_profile)
         self.get_logger().info(f'Publishing {size_bytes} bytes at 50Hz...')

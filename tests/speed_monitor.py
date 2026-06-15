@@ -9,10 +9,10 @@ class SpeedMonitor(Node):
     def __init__(self):
         super().__init__('speed_monitor')
         qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
+            reliability=ReliabilityPolicy.RELIABLE,
             durability=DurabilityPolicy.VOLATILE,
             history=HistoryPolicy.KEEP_LAST,
-            depth=1
+            depth=10
         )
         self.subscription = self.create_subscription(
             UInt8MultiArray, 'speed_test_topic', self.listener_callback, qos_profile)
