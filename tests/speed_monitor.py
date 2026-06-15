@@ -3,13 +3,14 @@ from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
 import time
 
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 
 class SpeedMonitor(Node):
     def __init__(self):
         super().__init__('speed_monitor')
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE,
             history=HistoryPolicy.KEEP_LAST,
             depth=1
         )
