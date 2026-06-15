@@ -23,7 +23,8 @@ class SpeedMonitor(Node):
         self.get_logger().info('Speed Monitor Started. Waiting for data...')
 
     def listener_callback(self, msg):
-        # self.get_logger().info(f"Received message of size: {len(msg.data)}")
+        # Immediate visual feedback for every message received
+        print(".", end="", flush=True)
         self.msg_count += 1
         size = len(msg.data)
         self.total_bytes += size
