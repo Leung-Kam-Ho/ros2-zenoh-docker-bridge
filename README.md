@@ -6,11 +6,14 @@ It bypasses Docker Desktop's lack of real bridge mode by tunneling DDS multicast
 
 ### System in Action
 
+**Zenoh Bridge running and ROS 2 topics on Native Linux:**
+![Linux Native Bridge and Topics](assets/linux_native.png)
+
 **Mac Docker communicating with Native Linux ROS 2:**
 ![Mac Docker Communication](assets/mac_docker.png)
 
-**Zenoh Bridge running and ROS 2 topics on Native Linux:**
-![Linux Native Bridge and Topics](assets/linux_native.png)
+**Windows Docker communicating with Native Linux ROS 2:**
+![Windows Docker Communication](assets/windows_docker.png)
 
 ---
 
