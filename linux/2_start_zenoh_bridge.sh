@@ -8,5 +8,5 @@ fi
 
 echo "Starting Zenoh DDS Bridge on Native Linux (Listening on TCP 7447)..."
 echo "Allowing all DDS topics via regex: .*"
-export RUST_LOG=debug
+export RUST_LOG=info
 ./zenoh-bridge-dds -l tcp/0.0.0.0:7447 -a ".*"
