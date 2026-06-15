@@ -20,8 +20,18 @@ class BlobTalker(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    size = int(sys.argv[1]) if len(sys.argv) > 1 else 1024 * 1024  # Default 1MB
+    
+    # Defaults: 4MB messages at 100Hz (~400MB/s target)
+    size = int(sys.argv[1]) if len(sys.argv) > 1 else 4 * 1024 * 1024 
+    freq = float(sys.argv[2]) if len(sys.argv) > 2 else 100.0
+    
     blob_talker = BlobTalker(size)
+    blob_talker.timer_period = 1.0 / freq
+    blob_talker.timer.cancel() # Reset timer with new freq
+    blob_talker.timer = blob_talker.create_timer(blob_talker.timer_period, blob_talker.timer_callback)
+    
+    blob_talker.get_logger().info(f'STRESS TEST: {size/(1024*1024):.2f} MB @ {freq} Hz (~{(size*freq)/(1024*1024):.2f} MB/s)')
+    
     rclpy.spin(blob_talker)
     blob_talker.destroy_node()
     rclpy.shutdown()
