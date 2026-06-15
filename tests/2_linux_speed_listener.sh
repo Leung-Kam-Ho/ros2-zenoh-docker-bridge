@@ -13,6 +13,7 @@ echo "=========================================="
 
 echo "Starting Advanced Speed Monitor..."
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export FASTRTPS_DEFAULT_PROFILES_FILE=$(pwd)/fastdds_tuning.xml
 python3 tests/speed_monitor.py
 
 echo "Listener stopped."

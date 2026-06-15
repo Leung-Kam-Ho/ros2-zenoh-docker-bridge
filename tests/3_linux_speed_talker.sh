@@ -19,4 +19,5 @@ FREQ=${2:-100}         # Default: 100 Hz
 echo "Starting High-Frequency Test ($((SIZE/1024))KB @ ${FREQ}Hz = $(((SIZE*FREQ)/1024/1024))MB/s Target)..."
 
 export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+export FASTRTPS_DEFAULT_PROFILES_FILE=$(pwd)/fastdds_tuning.xml
 python3 tests/blob_talker.py $SIZE $FREQ
