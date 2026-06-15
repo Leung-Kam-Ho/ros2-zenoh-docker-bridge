@@ -16,11 +16,11 @@ services:
     command: tail -f /dev/null
 
   zenoh-bridge:
-    image: eclipse/zenoh-bridge-dds:latest
+    image: eclipse/zenoh-bridge-ros2dds:latest
     container_name: ros2_zenoh_bridge
     network_mode: "host"
     # Override entrypoint to avoid ash shell expanding the '.*' glob
-    entrypoint: ["/zenoh-bridge-dds"]
+    entrypoint: ["/zenoh-bridge-ros2dds"]
     # The bridge connects to the Linux machine's IP on port 7447
     # -a ".*" tells the bridge to allow/route ALL DDS topics and ignore discovery filters
     command: ["-m", "client", "-e", "tcp/${LINUX_IP}:7447", "-a", ".*"]
