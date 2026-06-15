@@ -7,5 +7,5 @@ if [ ! -f "./zenoh-bridge-ros2dds" ]; then
 fi
 
 echo "Starting Zenoh ROS2 Bridge on Native Linux (Listening on TCP 7447)..."
-export RUST_LOG=debug
+export RUST_LOG=info
 ./zenoh-bridge-ros2dds --listen tcp/0.0.0.0:7447 peer
