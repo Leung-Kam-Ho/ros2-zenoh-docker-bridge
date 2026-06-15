@@ -14,9 +14,13 @@ sleep 5
 echo "Stopping any existing talker..."
 docker exec ros2_jazzy_node pkill -f blob_talker.py 2>/dev/null || true
 
-echo "Starting EXTREME LIDAR Test (5MB @ 30Hz = 150MB/s Target)..."
-echo "This targets 150MB/s, which will test the absolute limit of Gigabit Ethernet."
+# Allow overriding defaults via command line arguments
+# Usage: ./tests/1_mac_speed_talker.sh [size_in_bytes] [frequency_hz]
+SIZE=${1:-153600}      # Default: 150 KB
+FREQ=${2:-100}           # Default: 100 Hz
 
-docker exec -it ros2_jazzy_node bash -c "source /opt/ros/jazzy/setup.bash && export RMW_IMPLEMENTATION=rmw_fastrtps_cpp && python3 /root/workspace/tests/blob_talker.py 5242880 30"
+echo "Starting High-Frequency Test ($((SIZE/1024))KB @ ${FREQ}Hz = $(((SIZE*FREQ)/1024/1024))MB/s Target)..."
+
+docker exec -it ros2_jazzy_node bash -c "source /opt/ros/jazzy/setup.bash && export RMW_IMPLEMENTATION=rmw_fastrtps_cpp && python3 /root/workspace/tests/blob_talker.py $SIZE $FREQ"
 
 echo "Done sending."
