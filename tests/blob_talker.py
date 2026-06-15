@@ -3,10 +3,17 @@ from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
 import sys
 
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+
 class BlobTalker(Node):
     def __init__(self, size_bytes):
         super().__init__('blob_talker')
-        self.publisher_ = self.create_publisher(UInt8MultiArray, 'speed_test_topic', 10)
+        qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10
+        )
+        self.publisher_ = self.create_publisher(UInt8MultiArray, 'speed_test_topic', qos_profile)
         self.get_logger().info(f'Publishing {size_bytes} bytes at 50Hz...')
         timer_period = 0.02  # 50Hz
         self.timer = self.create_timer(timer_period, self.timer_callback)

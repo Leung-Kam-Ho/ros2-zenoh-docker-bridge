@@ -3,11 +3,18 @@ from rclpy.node import Node
 from std_msgs.msg import UInt8MultiArray
 import time
 
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+
 class SpeedMonitor(Node):
     def __init__(self):
         super().__init__('speed_monitor')
+        qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10
+        )
         self.subscription = self.create_subscription(
-            UInt8MultiArray, 'speed_test_topic', self.listener_callback, 10)
+            UInt8MultiArray, 'speed_test_topic', self.listener_callback, qos_profile)
         self.start_time = time.time()
         self.msg_count = 0
         self.total_bytes = 0
@@ -15,6 +22,7 @@ class SpeedMonitor(Node):
         self.get_logger().info('Speed Monitor Started. Waiting for data...')
 
     def listener_callback(self, msg):
+        # self.get_logger().info(f"Received message of size: {len(msg.data)}")
         self.msg_count += 1
         size = len(msg.data)
         self.total_bytes += size
