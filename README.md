@@ -141,16 +141,17 @@ You can test communication in both directions using the provided scripts.
 
 To measure actual bandwidth and latency:
 
-1. **On Linux**, start the bandwidth monitor:
-   ```bash
-   ./tests/2_linux_speed_listener.sh
-   ```
-2. **On Mac/Windows**, start the default benchmark (150KB @ 100Hz):
-   ```bash
-   ./tests/1_mac_speed_talker.sh
-   ```
+**Option A: Mac/Windows to Linux (Standard)**
+1. **On Linux**, start the monitor: `./tests/2_linux_speed_listener.sh`
+2. **On Mac/Windows**, start the talker: `./tests/1_mac_speed_talker.sh`
 
-To simulate a high-resolution Lidar (1.5MB @ 10Hz), run this in your Mac/Windows terminal:
+**Option B: Linux to Mac/Windows**
+1. **On Mac/Windows**, ensure Docker is running, then run: `./mac/3_run_listener.sh` (or use the speed monitor inside Docker)
+2. **On Linux**, start the talker: `./tests/3_linux_speed_talker.sh`
+
+**Custom Tests:**
+Both talker scripts accept `[size_in_bytes]` and `[frequency_hz]`.
+To simulate a high-resolution Lidar (1.5MB @ 10Hz):
 ```bash
 ./tests/1_mac_speed_talker.sh 1572864 10
 ```
