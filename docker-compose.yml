@@ -9,7 +9,7 @@ services:
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-      - RUST_LOG=info
+      - RUST_LOG=debug
     volumes:
       - .:/root/workspace
     # Keep the container alive so we can exec into it and run talker/listener
@@ -26,4 +26,4 @@ services:
     environment:
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
       - RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-      - RUST_LOG=info
+      - RUST_LOG=debug
