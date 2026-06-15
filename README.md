@@ -156,6 +156,32 @@ To simulate a high-resolution Lidar (1.5MB @ 10Hz):
 ./tests/1_mac_speed_talker.sh 1572864 10
 ```
 
+---
+
+## Troubleshooting High-Bandwidth Data (Lidar/Images)
+
+If you experience low frequency or "freezes" when sending large messages (>1MB), follow these optimization steps:
+
+### 1. Increase Linux Kernel Buffers
+By default, Linux UDP buffers are too small for high-speed ROS 2 traffic. Run these commands on your Native Linux host:
+```bash
+sudo sysctl -w net.core.rmem_max=2147483647
+sudo sysctl -w net.core.wmem_max=2147483647
+```
+
+### 2. FastDDS Middleware Tuning
+This repository includes a `fastdds_tuning.xml` file that increases internal middleware buffers. To use it in your own nodes, export the environment variable:
+```bash
+export FASTRTPS_DEFAULT_PROFILES_FILE=/path/to/ros2-zenoh-docker-bridge/fastdds_tuning.xml
+```
+
+### 3. Use Compatible QoS
+For high-bandwidth data like Lidar point clouds, use `BEST_EFFORT` reliability to prevent head-of-line blocking and network stalls:
+- **Reliability:** `BEST_EFFORT`
+- **History Depth:** `50` (Higher depth helps prevent drops during bursts)
+
+---
+
 ## Step 6: Shutting Down
 
 When you are finished, gracefully stop your Docker containers.
